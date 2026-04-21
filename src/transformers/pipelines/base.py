@@ -51,6 +51,7 @@ from ..utils import (
     is_torch_mps_available,
     is_torch_musa_available,
     is_torch_npu_available,
+    is_torch_qaic_available,
     is_torch_xpu_available,
     logging,
 )
@@ -1019,6 +1020,8 @@ class Pipeline(_ScikitCompat, PushToHubMixin):
                 self.device = torch.device(f"npu:{device}")
             elif is_torch_hpu_available():
                 self.device = torch.device(f"hpu:{device}")
+            elif is_torch_qaic_available():
+                self.device = torch.device(f"qaic:{device}")
             elif is_torch_xpu_available(check_device=True):
                 self.device = torch.device(f"xpu:{device}")
             elif is_torch_mps_available():
@@ -1248,6 +1251,9 @@ class Pipeline(_ScikitCompat, PushToHubMixin):
                     yield
             elif self.device.type == "xpu":
                 with torch.xpu.device(self.device):
+                    yield
+            elif self.device.type == "qaic":
+                with torch.qaic.device(self.device):
                     yield
             else:
                 yield
